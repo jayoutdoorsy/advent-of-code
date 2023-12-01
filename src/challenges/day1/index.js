@@ -14,7 +14,6 @@ const DIGIT_DICTIONARY = {
   8: '8',
   9: '9',
   zero: '0',
-  er: '8',
   one: '1',
   two: '2',
   three: '3',
@@ -24,7 +23,6 @@ const DIGIT_DICTIONARY = {
   seven: '7',
   eight: '8',
   nine: '9',
-  nineteen: '19',
 };
 
 const getRows = str => {
@@ -36,7 +34,6 @@ const getRows = str => {
 
 const getCalibrationValueFromRow = (row, parser) => {
   const digits = parser.parse(row);
-  console.log(digits);
   if (!digits.length) {
     throw new Error('Unexpected edge case, no digits from row');
   }
