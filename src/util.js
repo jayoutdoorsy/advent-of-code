@@ -43,16 +43,14 @@ export class TokenParser {
     const parsedTokens = [];
     let mainIndex = 0;
     while (mainIndex < input.length) {
-      const currentToken = [];
       let subIndex = mainIndex;
       let char = input.charAt(subIndex);
       let node = this.tokenTrie[char];
       while (node) {
-        currentToken.push(char);
-        if (node[this.terminator]) {
-          parsedTokens.push(currentToken.join(''));
-        }
         char = input.charAt(++subIndex);
+        if (node[this.terminator]) {
+          parsedTokens.push(input.substr(mainIndex, subIndex - mainIndex));
+        }
         node = node[char];
       }
       mainIndex++;
