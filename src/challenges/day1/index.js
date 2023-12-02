@@ -1,6 +1,5 @@
-import { readFileSync } from 'fs';
 import { join } from 'path';
-import { TokenParser, getDirname, isValidNumber } from '../../util.js';
+import { TokenParser, getDirname, readFileRows, isValidNumber } from '../../util.js';
 
 const DIGIT_DICTIONARY = {
   0: '0',
@@ -25,13 +24,6 @@ const DIGIT_DICTIONARY = {
   nine: '9',
 };
 
-const getRows = str => {
-  return str
-    .split('\n')
-    .map(row => row.trim())
-    .filter(Boolean);
-};
-
 const getCalibrationValueFromRow = (row, parser) => {
   const digits = parser.parse(row);
   if (!digits.length) {
@@ -48,7 +40,7 @@ const getCalibrationValueFromRow = (row, parser) => {
 
 const main = async () => {
   const path = join(getDirname(import.meta.url), 'input.txt');
-  const rows = getRows(readFileSync(path).toString());
+  const rows = readFileRows(path);
   const digitParser = new TokenParser(Object.keys(DIGIT_DICTIONARY));
   const total = rows.reduce((sum, row) => sum + getCalibrationValueFromRow(row, digitParser), 0);
   console.log(total);

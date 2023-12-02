@@ -1,5 +1,13 @@
+import { readFileSync } from 'fs';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+
+export const split = (str, separator) => str.split(separator).map(p => p.trim());
+
+export const readFileRows = path => {
+  const contents = readFileSync(path).toString();
+  return split(contents, '\n').filter(Boolean);
+};
 
 export const getDirname = metaUrl => {
   const filename = fileURLToPath(metaUrl);
