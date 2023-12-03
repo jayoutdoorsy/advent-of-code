@@ -1,5 +1,6 @@
 import { join } from 'path';
 import { getDirname, isValidNumber, readFileRows, split } from '../../util.js';
+import { parseGame as funParseGame } from './fun-alternative/parseGame.js';
 
 // The bag contains only this many cubes of each color.
 // Some games will not be possible.
@@ -10,7 +11,7 @@ const MAX_CUBE_COUNTS = {
 };
 const ALLOWED_COLORS = Object.keys(MAX_CUBE_COUNTS);
 
-const parseGame = row => {
+const _parseGame = row => {
   const [title, roundsStr] = split(row, ':');
   const [, id] = split(title, ' ');
   if (!id || !isValidNumber(id)) {
@@ -54,7 +55,7 @@ const getMinimumPowerOfGame = game => {
 const main = async () => {
   const path = join(getDirname(import.meta.url), 'input.txt');
   const rows = readFileRows(path);
-  const games = rows.map(parseGame);
+  const games = rows.map(funParseGame);
   // For part 1
   const total = games.reduce((sum, game) => {
     const gameHasIllegalRound = game.rounds.some(round => {

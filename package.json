@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate-grammar": "cd ./src/challenges/day2/fun/ && apg -i ./gameGrammar.abnf -o ./gameGrammar.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,5 +25,8 @@
     "*.json": [
       "prettier --write --ignore-unknown"
     ]
+  },
+  "dependencies": {
+    "apg": "^3.1.2"
   }
 }

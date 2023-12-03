@@ -1,0 +1,13 @@
+game      = "Game" SP gameId ":" SP rounds
+gameId    = 1*DIGIT
+
+rounds    = round *( ";" SP round )
+round     = cube *( "," SP cube )
+cube      = (cubeCount SP cubeColor)
+
+cubeCount = 1*DIGIT
+cubeColor = "red" / "green" / "blue"
+
+; rfc5234
+DIGIT          =  %x30-39
+SP	           =  %x20

@@ -1,6 +1,8 @@
 import { readFileSync } from 'fs';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { parser as Parser, ast as AST } from 'apg-lib';
+import { Buffer } from 'buffer';
 
 export const split = (str, separator) => str.split(separator).map(p => p.trim());
 
@@ -56,5 +58,35 @@ export class TokenParser {
       mainIndex++;
     }
     return parsedTokens;
+  }
+}
+
+// Let's try using an ABNF file just for fun.
+// The original lib has a strange/dated interface, so will hide that.
+export class ABNFParser {
+  constructor(grammar) {
+    this.grammar = grammar;
+    this.entryToken = grammar.rules[0].name;
+    this.parser = new Parser();
+    this.parser.ast = new AST();
+  }
+  parse(input) {
+    const { success } = this.parser.parse(this.grammar, this.entryToken, input);
+    if (!success) {
+      throw new Error(`Failed to parse as '${this.entryToken}'`);
+    }
+    const result = {};
+    this.parser.ast.translate(result);
+    return result;
+  }
+  // register AST token listeners so we can build up the parsed object
+  register(listeners) {
+    this.parser.ast.callbacks = Object.keys(listeners).reduce((baseListeners, token) => {
+      baseListeners[token] = (state, chars, offset, limit, result) => {
+        const value = Buffer.from(chars.slice(offset, offset + limit)).toString();
+        listeners[token](state, result, value);
+      };
+      return baseListeners;
+    }, {});
   }
 }
