@@ -1,0 +1,7 @@
+engine      = 1*( symbol / number / ".")
+
+symbol = "*" / "%" / "-" / "#" / "=" / "@" / "$" / "/" / "+" / "&"
+number = 1*DIGIT
+
+; rfc5234
+DIGIT          =  %x30-39

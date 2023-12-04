@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { parser as Parser, ast as AST } from 'apg-lib';
+import { parser as Parser, ast as AST, ids } from 'apg-lib';
 import { Buffer } from 'buffer';
 
 export const split = (str, separator) => str.split(separator).map(p => p.trim());
@@ -79,12 +79,15 @@ export class ABNFParser {
     this.parser.ast.translate(result);
     return result;
   }
-  // register AST token listeners so we can build up the parsed object
+  // register AST token event listeners so we can build up the parsed object
   register(listeners) {
     this.parser.ast.callbacks = Object.keys(listeners).reduce((baseListeners, token) => {
       baseListeners[token] = (state, chars, offset, limit, result) => {
-        const value = Buffer.from(chars.slice(offset, offset + limit)).toString();
-        listeners[token](state, result, value);
+        const event = { state, chars, offset, limit, result };
+        if (state === ids.SEM_POST) {
+          event.value = Buffer.from(chars.slice(offset, offset + limit)).toString();
+        }
+        listeners[token](event);
       };
       return baseListeners;
     }, {});

@@ -4,26 +4,26 @@ import GameGrammar from './gameGrammar.js';
 
 const parser = new ABNFParser(new GameGrammar());
 parser.register({
-  gameId: (state, game, value) => {
+  gameId: ({ state, result, value }) => {
     if (state === ids.SEM_POST) {
-      game.id = Number(value);
+      result.id = Number(value);
     }
   },
-  round: (state, game) => {
+  round: ({ state, result }) => {
     if (state === ids.SEM_PRE) {
-      (game.rounds = game.rounds || []).push({});
+      (result.rounds = result.rounds || []).push({});
     } else {
-      delete game.count;
+      delete result.count;
     }
   },
-  cubeCount: (state, game, value) => {
+  cubeCount: ({ state, result, value }) => {
     if (state === ids.SEM_POST) {
-      game.count = Number(value);
+      result.count = Number(value);
     }
   },
-  cubeColor: (state, game, value) => {
+  cubeColor: ({ state, result, value }) => {
     if (state === ids.SEM_POST) {
-      game.rounds[game.rounds.length - 1][value] = game.count;
+      result.rounds[result.rounds.length - 1][value] = result.count;
     }
   },
 });
