@@ -12,19 +12,36 @@ const sortScoreMap = {
   8: 6,
   9: 7,
   T: 8,
-  J: 9,
+  J: -1, // For part 2, J is now lower than 2
   Q: 10,
   K: 11,
   A: 12,
 };
 
+// ugly but part 2 needs to handle J
 const sortHandByCardPrevalence = hand => {
   const counts = {};
-  for (const card of hand) counts[card] = (counts[card] || 0) + 1;
-  // Break ties with card rank
-  const sorter = (a, b) =>
-    counts[b] - counts[a] ? counts[b] - counts[a] : sortScoreMap[b] - sortScoreMap[a];
-  return hand.sort(sorter);
+  for (const card of hand) {
+    counts[card] = (counts[card] || 0) + 1;
+  }
+
+  // Break ties with card rank, make sure J always gets bumped to top like JJJK5
+  const sorter = (a, b) => {
+    if (a === 'J') return -1;
+    if (b === 'J') return 1;
+    return counts[b] - counts[a] ? counts[b] - counts[a] : sortScoreMap[b] - sortScoreMap[a];
+  };
+  hand.sort(sorter);
+
+  // For part 2 convert all J's to the next most prevalent card like JJJK5 -> KKKK5
+  if (counts.J) {
+    const highestNextCard = hand[counts.J] || 'A';
+    for (let i = 0; i < counts.J; i++) {
+      hand[i] = highestNextCard;
+    }
+  }
+
+  return hand;
 };
 
 const getHands = rows => {
@@ -75,7 +92,7 @@ const main = async () => {
   const groupedHands = groupHandsByType(hands);
   // Sorting types individually should be enough since each type dominates the next in rank
   const sortedByRank = groupedHands.map(sortHandsByRank).flat().reverse();
-  console.log(sortedByRank.map(hand => hand.hand));
+  // console.log(sortedByRank.map(hand => hand.hand));
   const score = sortedByRank.reduce((score, hand, i) => score + hand.bid * (i + 1), 0);
   console.log(score);
 };
