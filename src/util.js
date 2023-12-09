@@ -61,7 +61,7 @@ export class TokenParser {
   }
 }
 
-export const parseNumbers = str => str.match(/[0-9]+/g).map(Number);
+export const parseNumbers = str => str.match(/-?[0-9]+/g).map(Number);
 
 // Let's try using an ABNF file just for fun.
 // The original lib has a strange/dated interface, so will hide that.
