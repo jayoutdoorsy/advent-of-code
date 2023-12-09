@@ -16,18 +16,32 @@ import { getDirname, parseNumbers, readFileRows } from '../../util.js';
 
 // Can always use a loop instead of recursion since recursion is prone to stack overflows
 // or in some cases tail recursion optimization could work (node 18? not sure)
-const getDiff = row => {
+
+// part 1
+const _getNextDiff = row => {
   let hasNonZero = false;
   for (let i = 1; i < row.length; i++) {
     const diff = (row[i - 1] = row[i] - row[i - 1]);
     hasNonZero = hasNonZero || !!diff;
   }
-  return row.pop() + (hasNonZero ? getDiff(row) : 0);
+  return row.pop() + (hasNonZero ? _getNextDiff(row) : 0);
 };
+
+// part 2 is like part 1 but from the other side
+const getPrevDiff = row => {
+  let hasNonZero = false;
+  for (let i = row.length - 1; i > 0; i--) {
+    const diff = (row[i] = row[i] - row[i - 1]);
+    hasNonZero = hasNonZero || !!diff;
+  }
+  return row.shift() - (hasNonZero ? getPrevDiff(row) : 0);
+};
+
 const main = async () => {
   const path = join(getDirname(import.meta.url), 'input.txt');
   const rows = readFileRows(path).map(parseNumbers);
-  const diff = rows.map(getDiff);
+  // part 2 now
+  const diff = rows.map(getPrevDiff);
   const sum = diff.reduce((total, d) => total + d, 0);
   console.log(sum);
 };
