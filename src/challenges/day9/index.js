@@ -28,20 +28,26 @@ const _getNextDiff = row => {
 };
 
 // part 2 is like part 1 but from the other side
-const getPrevDiff = row => {
+// Cool tail recursion optimized version. have to use alterating signs in the sum
+// Interestingly the previous version included a minus sign in the return value
+// so we didnt need an alternating factor, since it already had one:
+// e.g. 10 - (3 - (0 - (2 - 0)))   (regular recursion, can't be optimized)
+//      10 - 3 + 0 - 2 + 0         (tail optimized)
+const getPrevDiff = (row, sum = 0, neg = -1) => {
   let hasNonZero = false;
   for (let i = row.length - 1; i > 0; i--) {
     const diff = (row[i] = row[i] - row[i - 1]);
     hasNonZero = hasNonZero || !!diff;
   }
-  return row.shift() - (hasNonZero ? getPrevDiff(row) : 0);
+  sum = sum - neg * row.shift();
+  return hasNonZero ? getPrevDiff(row, sum, -neg) : sum;
 };
 
 const main = async () => {
   const path = join(getDirname(import.meta.url), 'input.txt');
   const rows = readFileRows(path).map(parseNumbers);
   // part 2 now
-  const diff = rows.map(getPrevDiff);
+  const diff = rows.map(row => getPrevDiff(row));
   const sum = diff.reduce((total, d) => total + d, 0);
   console.log(sum);
 };
