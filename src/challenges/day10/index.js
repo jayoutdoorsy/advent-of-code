@@ -48,19 +48,20 @@ const rowsToGraph = rows => {
   return startNode;
 };
 
+// too general since there's only one main loop. and could improve perf/overflow with our own stack
 const getLoopLengths = start => {
-  let lengths = [];
-  const visit = (node, pathLength = 0, prevNode) => {
+  let loops = [];
+  const visit = (node, loop = []) => {
     if (node.visited) {
-      return lengths.push(pathLength);
+      return loops.push(loop);
     }
     node.visited = true;
     for (const edge of node.edges) {
-      if (prevNode !== edge) visit(edge, pathLength + 1, node);
+      if (!edge.visited || edge.type === 'S') visit(edge, [...loop, node]);
     }
   };
   visit(start);
-  return lengths;
+  return loops;
 };
 
 // S must be in the main loop
@@ -71,8 +72,10 @@ const main = async () => {
   const path = join(getDirname(import.meta.url), 'input.txt');
   const rows = readFileRows(path);
   const start = rowsToGraph(rows);
-  const loopLengths = getLoopLengths(start);
-  console.log(Math.max(...loopLengths) / 2);
+  const loops = getLoopLengths(start);
+  loops.sort((l1, l2) => l2.length - l1.length);
+  const mainLoop = loops[0];
+  console.log(mainLoop.length / 2);
 };
 
 main();
